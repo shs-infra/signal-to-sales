@@ -28,9 +28,17 @@ CREATE OR REPLACE VIEW agg_mentions AS
 SELECT
     DATE_TRUNC('week', published_at) AS week_date,
     product_id,
+
     COUNT(*) AS mentions_count,
-    SUM(tone * author_influence_score)
-        / NULLIF(SUM(author_influence_score), 0) AS weighted_sentiment,
+
+    (
+        (
+            SUM(tone * author_influence_score)
+            / NULLIF(SUM(author_influence_score), 0)
+        ) + 1
+    ) * 50 AS weighted_sentiment,
+
     AVG(author_influence_score) AS avg_author_influence
+
 FROM latest_mentions
 GROUP BY 1,2;
