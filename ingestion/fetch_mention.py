@@ -6,7 +6,7 @@ import uuid
 from sqlalchemy import create_engine
 
 API_TOKEN = os.getenv("MENTION_API_TOKEN")
-ACCOUNT_ID = "YOUR_ACCOUNT_ID"
+ACCOUNT_ID = os.getenv("MENTION_ACCOUNT_ID")
 
 engine = create_engine(os.getenv("DB_URL"))
 batch_id = str(uuid.uuid4())
