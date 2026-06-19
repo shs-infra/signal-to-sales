@@ -19,6 +19,7 @@ CREATE TABLE stg_google_trends_raw (
     id BIGSERIAL PRIMARY KEY,
     date DATE NOT NULL,
     keyword VARCHAR(255) NOT NULL,
+    product_id INT NOT NULL,
     raw_trends_index FLOAT,
     anchor_keyword_index FLOAT,
     is_anchor_keyword BOOLEAN,
