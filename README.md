@@ -1,18 +1,9 @@
 # signal-to-sales
 
-PostgreSQL ETL pipeline that ingests demand signals from Google Trends and the Mention API, processes them in SQL, and loads a weekly product popularity mart (`fact_product_popularity`).
-
-The pipeline covers the full flow from API ingestion and snapshot-based staging, transformations, and mart loading. The current implementation focuses on external demand signals; sales ingestion and correlation analysis are planned as the next stage.
+PostgreSQL ETL pipeline that combines Google Trends and Mention API data into a weekly product popularity fact table (`fact_product_popularity`). 
+Data is ingested from both APIs, stored as snapshots, transformed in SQL, and aggregated to weekly product metrics. Sales staging is in the schema but not connected yet.
 
 Inspired by Kolchyna's research on using social media and Google Trends data for sales forecasting.
-
----
-
-## Overview
-
-The goal was to combine Google Trends and social media data into a weekly product-level fact table while preserving source and ingestion lineage.
-
-The two sources have different constraints, levels of granularity, and data quality challenges that the pipeline had to handle.
 
 ---
 
@@ -30,11 +21,11 @@ keywords.csv → ingest → stg_*_raw → latest_* → agg_* → fact_product_po
 
 ## Problems the pipeline had to solve
 
-### Google Trends rewrites history
+### Google Trends snapshots
 
-Trends does not return search counts — only a relative index (0–100) that may change between pulls, so the pipeline stores snapshots instead of overwriting data.
+Google Trends returns a relative popularity score (0–100), not search volume. Historical values can change between pulls, so each request is appended as a snapshot rather than overwriting existing rows.
 
-Each run appends new rows with a timestamp. SQL then selects the latest snapshot per `(date, keyword, product_id)`.
+SQL then selects the latest snapshot per `(date, keyword, product_id)`.
 
 Each product keyword is fetched alongside **"Weather"** as an anchor — a stable reference point for normalizing the scale:
 
@@ -46,7 +37,7 @@ raw_trends_index / NULLIF(anchor_keyword_index, 0) AS normalized_trends_index
 
 Trends and mentions are daily; early attempts to load directly into the fact table caused primary key conflicts and duplicates. The fix was **weekly aggregation** before the load — a shared calendar for both sources.
 
-### Social sentiment — not every mention counts equally
+### Weighted mention sentiment
 
 From the Mention API, the pipeline uses `tone` (sentiment) and `author_influence_score` (author reach). Weekly sentiment is an influence-weighted average, rescaled to 0–100 so it can be compared with Trends metrics:
 
@@ -56,7 +47,7 @@ From the Mention API, the pipeline uses `tone` (sentiment) and `author_influence
 
 ### Keyword → product mapping
 
-For now, a manual exact-match map in `config/keywords.csv`. A future improvement would be semantic matching instead of exact keyword mapping.
+The current mapping relies on exact keyword matches from `config/keywords.csv`. More flexible solution would include searches matching based on meaning rather than exact keywords. 
 
 ---
 
@@ -71,4 +62,4 @@ For now, a manual exact-match map in `config/keywords.csv`. A future improvement
 
 ## Next step
 
-The schema already includes sales-related tables and fact columns. The next step is to ingest sales data, integrate it into the fact load, and evaluate whether search interest or social sentiment can act as leading indicators of future sales.
+The schema already includes sales-related tables and fact columns. The next step is to ingest sales data, integrate it into the fact load, and see if spikes in search interest or sentiment show up before sales increase.
