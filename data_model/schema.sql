@@ -1,20 +1,3 @@
-CREATE TABLE dim_product (
-    product_id INT PRIMARY KEY,
-    product_name VARCHAR(255) NOT NULL,
-    category VARCHAR(255),
-    brand VARCHAR(255),
-    main_keyword VARCHAR(255)
-);
-
-CREATE TABLE dim_date (
-    week_id VARCHAR(10) PRIMARY KEY,
-    week_start_date DATE NOT NULL,
-    week_end_date DATE NOT NULL,
-    month INT,
-    quarter INT,
-    year INT
-);
-
 CREATE TABLE stg_google_trends_raw (
     id BIGSERIAL PRIMARY KEY,
     date DATE NOT NULL,
@@ -22,7 +5,6 @@ CREATE TABLE stg_google_trends_raw (
     product_id INT NOT NULL,
     raw_trends_index FLOAT,
     anchor_keyword_index FLOAT,
-    is_anchor_keyword BOOLEAN,
     snapshot_timestamp TIMESTAMP NOT NULL,
     batch_id VARCHAR(255),
 

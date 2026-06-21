@@ -64,7 +64,7 @@ For now, a manual exact-match map in `config/keywords.csv`. A future improvement
 
 - `ingestion/` – Google Trends and Mention API ingestion
 - `config/keywords.csv` – keyword → product_id → alert_id mapping
-- `data_model/schema.sql` – schema definition, dimensions, staging and fact tables
+- `data_model/schema.sql` – staging, fact, and sales scaffold tables
 - `sql/staging_views.sql` – Last-Value-Wins deduplication views
 - `sql/transformations.sql` – trend normalization, mention metrics, and weekly aggregations
 - `sql/load_fact_product_popularity.sql` – load into `fact_product_popularity`

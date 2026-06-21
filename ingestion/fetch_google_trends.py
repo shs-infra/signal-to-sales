@@ -39,7 +39,6 @@ for _, row in keywords_df.iterrows():
 
             df["keyword"] = keyword
             df["product_id"] = product_id
-            df["is_anchor_keyword"] = False
             df["snapshot_timestamp"] = datetime.now()
             df["batch_id"] = batch_id
 
