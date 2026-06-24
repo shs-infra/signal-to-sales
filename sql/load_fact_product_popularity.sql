@@ -26,5 +26,14 @@ SELECT
     t.batch_id
 FROM agg_trends t
 LEFT JOIN agg_mentions m
-ON t.week_date = m.week_date
-AND t.product_id = m.product_id;
+    ON t.week_date = m.week_date
+    AND t.product_id = m.product_id
+ON CONFLICT (week_id, product_id) DO UPDATE SET
+    mentions_count = EXCLUDED.mentions_count,
+    weighted_sentiment = EXCLUDED.weighted_sentiment,
+    avg_author_influence = EXCLUDED.avg_author_influence,
+    raw_trends_index = EXCLUDED.raw_trends_index,
+    anchor_keyword_index = EXCLUDED.anchor_keyword_index,
+    normalized_trends_index = EXCLUDED.normalized_trends_index,
+    load_timestamp = EXCLUDED.load_timestamp,
+    batch_id = EXCLUDED.batch_id;
